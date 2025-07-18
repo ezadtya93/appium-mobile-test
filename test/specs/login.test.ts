@@ -8,8 +8,8 @@ describe('Login from Bottom Sheet', () => {
     await loginButton.click();
 
     const inputFields = await $$('android.widget.EditText');
-    await inputFields[0].setValue('eza.aditya981@gmail.com');
-    await inputFields[1].setValue('Testing123?');
+    await inputFields[0].setValue('eza.zulfachry@gramedia.id');
+    await inputFields[1].setValue('testing123');
 
     // // Optional: tekan Enter supaya form blur dan tombol aktif
     // await inputFields[1].addValue('\n');

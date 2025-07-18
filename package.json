@@ -13,8 +13,10 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.14",
+    "@wdio/allure-reporter": "^9.18.0",
     "@wdio/globals": "^9.17.0",
     "@wdio/types": "^9.16.2",
+    "allure-commandline": "^2.34.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },

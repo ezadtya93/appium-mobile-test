@@ -59,31 +59,33 @@ export const config: Options.WebdriverIO = {
     await driver.launchApp();
   },
 
-  /**
-   * Hook sesudah setiap test
-   * - Jika gagal, ambil screenshot + simpan ke allure
+   /**
+   * Screenshot setelah setiap test (baik sukses maupun gagal)
    */
-  afterTest: async function (test, context, { error, passed }) {
+   afterTest: async function (test, context, { error, passed }) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const status = passed ? 'SUCCESS' : 'ERROR';
+    const safeTitle = test.title.replace(/\s+/g, '_');
+    const filename = `${status}_${safeTitle}_${timestamp}.png`;
+    const folderPath = path.join(__dirname, 'screenshots');
+    const filePath = path.join(folderPath, filename);
+
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+
+    await browser.saveScreenshot(filePath);
+    await browser.takeScreenshot(); // attach to Allure
+    console.log(`📸 Screenshot saved: ${filePath}`);
+
     if (!passed) {
-      console.log('❌ Test failed:', test.title);
-      console.log('📄 Error message:', error?.message);
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `ERROR_${test.title.replace(/\s+/g, '_')}_${timestamp}.png`;
-      const filePath = path.join('./errorShots', filename);
-
-      // Buat folder jika belum ada
-      if (!fs.existsSync('./errorShots')) {
-        fs.mkdirSync('./errorShots');
-      }
-
-      await browser.saveScreenshot(filePath);
-      await browser.takeScreenshot(); // untuk Allure
+      console.error(`❌ Test failed: ${test.title}`);
+      console.error(`📄 Error message: ${error?.message}`);
     }
   },
 
   /**
-   * Setelah semua test selesai, generate Allure report otomatis
+   * Generate & buka Allure report otomatis setelah test
    */
   onComplete: function () {
     const generate = require('child_process').spawnSync('npx', ['allure', 'generate', 'allure-results', '--clean']);

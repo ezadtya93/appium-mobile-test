@@ -88,17 +88,29 @@ export const config: Options.WebdriverIO = {
    * Generate & buka Allure report otomatis setelah test
    */
   onComplete: function () {
-    const generate = require('child_process').spawnSync('npx', ['allure', 'generate', 'allure-results', '--clean']);
+    const { spawnSync, spawn } = require('child_process');
+  
+    // Generate allure report
+    const generate = spawnSync('npx', ['allure', 'generate', 'allure-results', '--clean'], {
+      stdio: 'inherit',
+      shell: true,
+    });
+  
     if (generate.status !== 0) {
-      console.error('❌ Failed to generate Allure Report');
-      console.error(generate.stderr.toString());
+      console.error('❌ Gagal generate allure report');
       return;
     }
-
-    console.log('✅ Allure report generated successfully');
-    require('child_process').spawn('npx', ['allure', 'open'], {
+  
+    console.log('✅ Allure report berhasil digenerate');
+  
+    // Buka allure report di browser
+    const open = spawn('npx', ['allure', 'open'], {
       stdio: 'inherit',
-      shell: true
+      shell: true,
     });
-  },
+  
+    open.on('error', (err) => {
+      console.error('❌ Gagal membuka allure report:', err);
+    });
+  }
 };
